@@ -12,10 +12,13 @@ track = 'track.bmp'
 checkpoints = [(400,150),(500,70),(600,60),(640,140),(605,210),(680,300),(720,380),(580,390),(450,350),(320,320),(250,235),(110,325),(60,200),(125,75),(290,90)]
 
 # set up run parameters
-duration = 60
-n_generations = 40
-generation_size = 300
-n_to_keep = 10
+duration = 90
+n_generations = 20
+generation_size = 15
+n_to_keep = 4
+
+starting_speed = 0
+starting_size = 5
 
 # for ease, define colours here
 RED = (255,0,0)
@@ -26,13 +29,13 @@ BLACK = (0,0,0)
 
 # Train to create save file of best racers, Race to race them on a starting grid
 Train = True
-Race = True
+Race = False
 
 if Train:
 	
 	# initiate display and display options
 	screen = pygame.display.set_mode((width, height))
-	lines = False
+	lines = True
 	display_checkpoints = True
 
 	# initialise environment
@@ -41,7 +44,7 @@ if Train:
 	# add initial particles
 	for i in range(generation_size):	
 		fov = random.uniform(0,90)
-		env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=0, size=5)
+		env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=starting_speed, size=starting_size)
 
 	# display text
 	pygame.init()
@@ -56,10 +59,11 @@ if Train:
 	while n < n_generations:
 
 		print('##################')
-		print('## GENERATION '+str(n+1)+' ##')
+		generation_caption = '## GENERATION '+str(n+1)+' of '+str(n_generations)+'##'
+		print(generation_caption)
 		print('##################')
 
-		pygame.display.set_caption('Generation '+str(n+1))
+		pygame.display.set_caption(generation_caption)
 
 		particle_list = env.particles
 
@@ -73,6 +77,7 @@ if Train:
 		running = True
 		start_time = time.time()
 		current_time = time.time()
+		
 
 		while current_time - start_time < duration and running == True:
 			for event in pygame.event.get():
@@ -178,16 +183,16 @@ if Train:
 
 			for pair in parent_pairs:
 				control_rods,bias,fov,colour = pyparticles.breed(sorted_list[pair[0]],sorted_list[pair[1]])
-				env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=0, size=5, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
+				env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=starting_speed, size=starting_size, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
 
 		while len(env.particles) < (generation_size - 5):
 			parent1 = sorted_list[random.randint(0,generation_size-1)]
 			parent2 = sorted_list[random.randint(0,generation_size-1)]
 			control_rods,bias,fov,colour = pyparticles.breed(parent1,parent2)
-			env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=0, size=5, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
+			env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=starting_speed, size=starting_size, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
 
 		while len(env.particles) < generation_size:
-			env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=0, size=5)
+			env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=starting_speed, size=starting_size)
 
 		# save these particles to file
 		with open('final_drivers','wb') as output:
@@ -226,7 +231,7 @@ if Race:
 	i = 0
 	for p in driver_list:	
 		fov = random.uniform(0,90)
-		env.addParticles(1, x=starting_grid[i][0], y=starting_grid[i][1], speed=0, size=5, control_rods=p.control_rods, bias=p.bias, fov=p.fov)
+		env.addParticles(1, x=starting_grid[i][0], y=starting_grid[i][1], speed=starting_speed, size=starting_size, control_rods=p.control_rods, bias=p.bias, fov=p.fov)
 		i += 1
 	particle_list = env.particles
 

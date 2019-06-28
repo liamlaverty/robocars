@@ -2,4 +2,5 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-final_drivers
+training_files
+final_drivers.txt

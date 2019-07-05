@@ -233,6 +233,9 @@ def do_race():
 		fov = random.uniform(0,90)
 		env.addParticles(1, x=starting_grid[i][0], y=starting_grid[i][1], speed=Settings.starting_speed, size=Settings.starting_size, control_rods=p.control_rods, bias=p.bias, fov=p.fov)
 		i += 1
+		if (i >= len(starting_grid)):
+			break
+		
 	particle_list = env.particles
 
 	# set up background

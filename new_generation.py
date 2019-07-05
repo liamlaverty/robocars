@@ -16,8 +16,9 @@ def new_generation(particle_list,
     env = pyparticles.Environment((width, height),image=track,checkpoints=checkpoints,colliding=False)
     
     for i in range(Settings.n_to_keep):
-
-        parent_pairs = list(itertools.combinations(range(i+1),2))
+        if i >= len(sorted_list):
+            i = 0
+        parent_pairs = list(itertools.combinations(range(i-1),2))
 
         for pair in parent_pairs:
             control_rods,bias,fov,colour = pyparticles.breed(sorted_list[pair[0]],sorted_list[pair[1]])

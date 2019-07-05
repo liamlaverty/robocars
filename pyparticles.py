@@ -174,7 +174,7 @@ class Particle():
         	self.checkpoints_passed += 1
         	self.score += ((1000*self.checkpoints_passed)/(env.time_elapsed + 1))**2
 
-        if (self.checkpoints_passed+1) % len(env.checkpoints) == 1 and self.score > 0 and (env.time_elapsed - self.stopwatch) > 5000 :
+        if (self.checkpoints_passed+1) % len(env.checkpoints) == 1 and self.score > 0 and (env.time_elapsed - self.stopwatch) > 1000 :
        	       		
        		if (env.time_elapsed - self.stopwatch) < self.fastest_lap:
 	       		

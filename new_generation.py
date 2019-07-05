@@ -23,11 +23,24 @@ def new_generation(particle_list,
             control_rods,bias,fov,colour = pyparticles.breed(sorted_list[pair[0]],sorted_list[pair[1]])
             env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
 
+    print("Generated " + str(len(parent_pairs)) + " from previous generation")
     while len(env.particles) < (Settings.generation_size - 5):
-        parent1 = sorted_list[random.randint(0,Settings.generation_size -1)]
-        parent2 = sorted_list[random.randint(0,Settings.generation_size -1)]
-        control_rods,bias,fov,colour = pyparticles.breed(parent1,parent2)
-        env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
+        rand_parent_1_index = random.randint(0,len(sorted_list) -1)
+        rand_parent_2_index = random.randint(0,len(sorted_list) -1)
+        if (rand_parent_1_index < len(sorted_list) & rand_parent_2_index < len(sorted_list)): 
+            if (rand_parent_1_index < len(sorted_list)):
+                parent1 = sorted_list[rand_parent_1_index]
+            else:
+                print("could not alloc " + str(rand_parent_1_index) + " to a list of size " + str(len(sorted_list)))
+            if (rand_parent_2_index < len(sorted_list)):        
+                parent2 = sorted_list[rand_parent_2_index]
+            else:
+                print("could not alloc " + str(rand_parent_2_index) + " to a list of size " + str(len(sorted_list)))    
+
+            control_rods,bias,fov,colour = pyparticles.breed(parent1,parent2)
+            env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
 
     while len(env.particles) < Settings.generation_size :
         env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size)
+
+    return env.particles

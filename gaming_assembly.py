@@ -13,6 +13,7 @@ from file_manager import File_Manager
 # Train to create save file of best racers, Race to race them on a starting grid
 Train = True
 Race = False
+ForceNew = False
 
 # declare size of window and track to use
 (width, height) = (1200, 450)
@@ -33,15 +34,14 @@ BLACK = (0,0,0)
 def load_generation_or_new_generation(env, force_new, checkpoints):
 	if (force_new == True):
 		for i in range(Settings.generation_size):
-			fov = random.uniform(0, 90)
+			# fov = random.uniform(0, 90)
 			env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size)
 	else:
-		i = 0
+		# i = 0
 		driver_list = File_Manager.load_last_training_file(File_Manager)
 		for p in driver_list:	
 			fov = random.uniform(0,90)
-			env.addParticles(1, x=checkpoints[i][0], y=checkpoints[i][1], speed=Settings.starting_speed, size=Settings.starting_size, control_rods=p.control_rods, bias=p.bias, fov=p.fov)
-			i += 1
+			env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size, control_rods=p.control_rods, bias=p.bias, fov=p.fov)
 	return env.particles
 
 
@@ -58,7 +58,7 @@ def do_training():
 
 	
 	# add initial particles
-	particles_list = load_generation_or_new_generation(env, False, checkpoints=checkpoints)
+	load_generation_or_new_generation(env, ForceNew, checkpoints=checkpoints)
 	# for i in range(Settings.generation_size):	
 	# 	fov = random.uniform(0,90)
 	# 	env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size)
@@ -191,7 +191,7 @@ def do_training():
 
 		### BREED NEW GENERATION ###
 
-		new_generation(particle_list,
+		env.particles = new_generation(particle_list,
 		 				pyparticles,
 		 				width,
 		 				height,

@@ -7,3 +7,4 @@ class Settings:
 
     starting_speed = 0
     starting_size = 3
+    filesdir = 'training_files/'

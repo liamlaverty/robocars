@@ -8,26 +8,20 @@ import shutil, os
 import argparse
 from app_settings import Settings
 from new_generation import new_generation
+from file_manager import File_Manager
 
-def get_files(dirpath):
-    a = [s for s in os.listdir(dirpath)
-	       if os.path.isfile(os.path.join(dirpath, s))]
-    a.sort(key=lambda s: os.path.getmtime(os.path.join(dirpath, s)))
-    return a
 
-def get_first(iterable):
-	length = len(iterable) -1
-	return iterable[length]
+
 
 
 # Train to create save file of best racers, Race to race them on a starting grid
-Train = True
-Race = False
+Train = False
+Race = True
 
 # declare size of window and track to use
 (width, height) = (1200, 450)
 track = 'track.bmp'
-filesdir = 'training_files/'
+
 
 
 # given track, place checkpoints
@@ -189,43 +183,19 @@ def do_training():
 		 				track,
 		 				checkpoints)
 
-		# sorted_list = sorted(particle_list, key=lambda particle:particle.score)[::-1]
-
-		# env = pyparticles.Environment((width, height),image=track,checkpoints=checkpoints,colliding=False)
-		
-		# for i in range(Settings.n_to_keep - 1):
-
-		# 	parent_pairs = list(itertools.combinations(range(i+1),2))
-
-		# 	for pair in parent_pairs:
-		# 		control_rods,bias,fov,colour = pyparticles.breed(sorted_list[pair[0]],sorted_list[pair[1]])
-		# 		env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
-
-		# while len(env.particles) < (Settings.generation_size - 5):
-		# 	parent1 = sorted_list[random.randint(0,Settings.generation_size-1)]
-		# 	parent2 = sorted_list[random.randint(0,Settings.generation_size-1)]
-		# 	control_rods,bias,fov,colour = pyparticles.breed(parent1,parent2)
-		# 	env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
-
-		# while len(env.particles) < Settings.generation_size:
-		# 	env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size)
-
-		# save these particles to file
-		save_path = '{dir}final_drivers-{date:%Y-%m-%d_%H%M%S}.txt'.format( dir=filesdir, date=datetime.datetime.now() )
-
-		with open(save_path,'wb') as output:
-			driver_list = sorted_list[:10]
-			pickle.dump(driver_list, output)
+		File_Manager.save_last_training_file(File_Manager, sorted_list[:10])
 
 		n += 1
 
 def do_race():
+
+	driver_list = File_Manager.load_last_training_file(File_Manager)
 	# load in drivers
-	all_files = get_files(filesdir)
-	racer_file =  filesdir + get_first(all_files)
-	print('loading ' + racer_file)
-	with open(racer_file,'rb') as input:
-		driver_list = pickle.load(input)
+	# all_files = get_files(Settings.filesdir)
+	# racer_file =  Settings.filesdir + get_first(all_files)
+	# print('loading ' + racer_file)
+	# with open(racer_file,'rb') as input:
+	# 	driver_list = pickle.load(input)
 
 	# initiate race window
 	pygame.display.set_caption('Race!')

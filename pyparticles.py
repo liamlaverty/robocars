@@ -172,7 +172,7 @@ class Particle():
         if math.hypot(self.x-next_checkpoint[0],self.y-next_checkpoint[1]) < 40:
         	
         	self.checkpoints_passed += 1
-        	self.score += (1000*self.checkpoints_passed/env.time_elapsed + 1)**2
+        	self.score += ((1000*self.checkpoints_passed)/(env.time_elapsed + 1))**2
 
         if (self.checkpoints_passed+1) % len(env.checkpoints) == 1 and self.score > 0 and (env.time_elapsed - self.stopwatch) > 5000 :
        	       		
@@ -273,7 +273,7 @@ class Environment:
 				particle.speed *= self.elasticity
 				particle.angle = - particle.angle
 			else:
-				article.speed *= -self.elasticity
+				particle.speed *= -self.elasticity
 				particle.angle = particle.angle
 				
 		if self.track[int(particle.y), int(particle.x - particle.size)] == 0:
@@ -283,7 +283,7 @@ class Environment:
 				particle.angle = - particle.angle
 				particle.speed *= self.elasticity
 			else:
-				article.speed *= -self.elasticity
+				particle.speed *= -self.elasticity
 				particle.angle = particle.angle
 
 		if self.track[int(particle.y + particle.size), int(particle.x)] == 0:

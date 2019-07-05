@@ -15,7 +15,7 @@ def new_generation(particle_list,
 
     env = pyparticles.Environment((width, height),image=track,checkpoints=checkpoints,colliding=False)
     
-    for i in range(Settings.n_to_keep - 1):
+    for i in range(Settings.n_to_keep):
 
         parent_pairs = list(itertools.combinations(range(i+1),2))
 

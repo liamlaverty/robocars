@@ -5,7 +5,9 @@ import pygame
 import pyparticles
 import random, math, itertools, time, pickle, datetime
 import shutil, os
-import new_generation, app_settings
+import argparse
+from app_settings import Settings
+from new_generation import new_generation
 
 def get_files(dirpath):
     a = [s for s in os.listdir(dirpath)
@@ -19,8 +21,8 @@ def get_first(iterable):
 
 
 # Train to create save file of best racers, Race to race them on a starting grid
-Train = False
-Race = True
+Train = True
+Race = False
 
 # declare size of window and track to use
 (width, height) = (1200, 450)
@@ -38,10 +40,7 @@ GREY = (230,230,230)
 BLUE = (0,0,255)
 BLACK = (0,0,0)
 
-
-
-if Train:
-	
+def do_training():
 	# initiate display and display options
 	screen = pygame.display.set_mode((width, height))
 	lines = True
@@ -51,9 +50,9 @@ if Train:
 	env = pyparticles.Environment((width, height),image=track,checkpoints=checkpoints,colliding=False)
 
 	# add initial particles
-	for i in range(app_settings.Settings.generation_size):	
+	for i in range(Settings.generation_size):	
 		fov = random.uniform(0,90)
-		env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=app_settings.Settings.starting_speed, size=app_settings.Settings.starting_size)
+		env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size)
 
 	# display text
 	pygame.init()
@@ -65,10 +64,10 @@ if Train:
 	headerRect.center = (800+200, 40)
 
 	n = 0
-	while n < app_settings.Settings.n_generations:
+	while n < Settings.n_generations:
 
 		print('##################')
-		generation_caption = '## GENERATION '+str(n+1)+' of '+str(app_settings.Settings.n_generations)+'##'
+		generation_caption = '## GENERATION '+str(n+1)+' of '+str(Settings.n_generations)+'##'
 		print(generation_caption)
 		print('##################')
 
@@ -88,7 +87,7 @@ if Train:
 		current_time = time.time()
 		
 
-		while current_time - start_time < app_settings.Settings.duration and running == True:
+		while current_time - start_time < Settings.duration and running == True:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					running = False
@@ -183,33 +182,33 @@ if Train:
 
 		### BREED NEW GENERATION ###
 
-		# new_generation(particle_list,
-		# 				pyparticles,
-		# 				width,
-		# 				height,
-		# 				track,
-		# 				checkpoints)
+		new_generation(particle_list,
+		 				pyparticles,
+		 				width,
+		 				height,
+		 				track,
+		 				checkpoints)
 
-		sorted_list = sorted(particle_list, key=lambda particle:particle.score)[::-1]
+		# sorted_list = sorted(particle_list, key=lambda particle:particle.score)[::-1]
 
-		env = pyparticles.Environment((width, height),image=track,checkpoints=checkpoints,colliding=False)
+		# env = pyparticles.Environment((width, height),image=track,checkpoints=checkpoints,colliding=False)
 		
-		for i in range(app_settings.Settings.n_to_keep - 1):
+		# for i in range(Settings.n_to_keep - 1):
 
-			parent_pairs = list(itertools.combinations(range(i+1),2))
+		# 	parent_pairs = list(itertools.combinations(range(i+1),2))
 
-			for pair in parent_pairs:
-				control_rods,bias,fov,colour = pyparticles.breed(sorted_list[pair[0]],sorted_list[pair[1]])
-				env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=app_settings.Settings.starting_speed, size=app_settings.Settings.starting_size, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
+		# 	for pair in parent_pairs:
+		# 		control_rods,bias,fov,colour = pyparticles.breed(sorted_list[pair[0]],sorted_list[pair[1]])
+		# 		env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
 
-		while len(env.particles) < (app_settings.Settings.generation_size - 5):
-			parent1 = sorted_list[random.randint(0,app_settings.Settings.generation_size-1)]
-			parent2 = sorted_list[random.randint(0,app_settings.Settings.generation_size-1)]
-			control_rods,bias,fov,colour = pyparticles.breed(parent1,parent2)
-			env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=app_settings.Settings.starting_speed, size=app_settings.Settings.starting_size, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
+		# while len(env.particles) < (Settings.generation_size - 5):
+		# 	parent1 = sorted_list[random.randint(0,Settings.generation_size-1)]
+		# 	parent2 = sorted_list[random.randint(0,Settings.generation_size-1)]
+		# 	control_rods,bias,fov,colour = pyparticles.breed(parent1,parent2)
+		# 	env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size, control_rods=control_rods, bias=bias, fov=fov, colour=colour)
 
-		while len(env.particles) < app_settings.Settings.generation_size:
-			env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=app_settings.Settings.starting_speed, size=app_settings.Settings.starting_size)
+		# while len(env.particles) < Settings.generation_size:
+		# 	env.addParticles(1, x=checkpoints[0][0], y=checkpoints[0][1], speed=Settings.starting_speed, size=Settings.starting_size)
 
 		# save these particles to file
 		save_path = '{dir}final_drivers-{date:%Y-%m-%d_%H%M%S}.txt'.format( dir=filesdir, date=datetime.datetime.now() )
@@ -220,7 +219,7 @@ if Train:
 
 		n += 1
 
-if Race:
+def do_race():
 	# load in drivers
 	all_files = get_files(filesdir)
 	racer_file =  filesdir + get_first(all_files)
@@ -253,7 +252,7 @@ if Race:
 	i = 0
 	for p in driver_list:	
 		fov = random.uniform(0,90)
-		env.addParticles(1, x=starting_grid[i][0], y=starting_grid[i][1], speed=app_settings.Settings.starting_speed, size=app_settings.Settings.starting_size, control_rods=p.control_rods, bias=p.bias, fov=p.fov)
+		env.addParticles(1, x=starting_grid[i][0], y=starting_grid[i][1], speed=Settings.starting_speed, size=Settings.starting_size, control_rods=p.control_rods, bias=p.bias, fov=p.fov)
 		i += 1
 	particle_list = env.particles
 
@@ -275,7 +274,7 @@ if Race:
 	running = True
 	start_time = time.time()
 	current_time = time.time()
-	while current_time - start_time < app_settings.Settings.duration and running == True:
+	while current_time - start_time < Settings.duration and running == True:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				running = False
@@ -371,3 +370,9 @@ if Race:
 
 	# sort the cars, produce a final leaderboard
 	sorted_list = sorted(particle_list, key=lambda particle:particle.score)[::-1][:10]
+
+
+
+if Train: do_training()
+
+if Race: do_race()
